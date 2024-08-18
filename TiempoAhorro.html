@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ahorro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+        }
+        label {
+            display: inline-block;
+            width: 200px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        h2 {
+            margin-top: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tiempo Ahorro con Interés Compuesto</h1>
+
+    <div class="container">
+        <div class="input-group">
+            <label for="objetivo">Objetivo de ahorro:</label>
+            <input type="number" id="objetivo" placeholder="Cantidad deseada" min="0" step="any">
+        </div>
+
+        <div class="input-group">
+            <label for="inicial">Monto inicial:</label>
+            <input type="number" id="inicial" placeholder="Monto inicial" min="0" step="any">
+        </div>
+
+        <div class="input-group">
+            <label for="aportacion">Aportación mensual:</label>
+            <input type="number" id="aportacion" placeholder="Aportación mensual" min="0" step="any">
+        </div>
+
+        <div class="input-group">
+            <label for="interes">Tasa de interés anual (%):</label>
+            <input type="number" id="interes" placeholder="Tasa de interés anual" min="0" step="any">
+        </div>
+
+        <div class="input-group">
+            <label for="aplicar_isr">¿Aplicar ISR?</label>
+            <input type="checkbox" id="aplicar_isr" onchange="toggleISR()">
+        </div>
+
+        <div class="input-group" id="isr-group" style="display: none;">
+            <label for="isr">Tasa de ISR (%):</label>
+            <input type="number" id="isr" placeholder="Tasa de ISR" min="0" step="any" value="0">
+        </div>
+
+        <div class="input-group">
+            <button onclick="calcularTiempo()">Calcular tiempo</button>
+            <button onclick="exportarCSV()">Exportar CSV</button>
+        </div>
+    </div>
+
+    <h2 id="resultado"></h2>
+
+    <script>
+        let historial = [];
+        let aplicarIsr = false;
+
+        function toggleISR() {
+            aplicarIsr = document.getElementById('aplicar_isr').checked;
+            document.getElementById('isr-group').style.display = aplicarIsr ? 'block' : 'none';
+        }
+
+        function calcularTiempo() {
+            const objetivo = parseFloat(document.getElementById('objetivo').value);
+            const inicial = parseFloat(document.getElementById('inicial').value);
+            const aportacion = parseFloat(document.getElementById('aportacion').value);
+            const interes = parseFloat(document.getElementById('interes').value) / 100;
+            const isr = aplicarIsr ? parseFloat(document.getElementById('isr').value) / 100 : 0;
+
+            if (isNaN(objetivo) || isNaN(inicial) || isNaN(aportacion) || isNaN(interes) || (aplicarIsr && isNaN(isr))) {
+                alert('Por favor, ingrese valores válidos en todos los campos.');
+                return;
+            }
+
+            let saldo = inicial;
+            let meses = 0;
+            historial = [];
+
+            while (saldo < objetivo) {
+                saldo += aportacion;  // Sumar la aportación mensual
+                let interesGanado = saldo * (interes / 12);  // Calcular interés compuesto
+                let impuestoISR = aplicarIsr ? interesGanado * isr : 0;  // Calcular el ISR
+                let interesDespuesISR = interesGanado - impuestoISR;
+                saldo += interesDespuesISR;  // Sumar interés después de ISR al saldo
+                meses++;
+
+                historial.push({
+                    mes: meses,
+                    saldoInicial: (saldo - aportacion - interesDespuesISR).toFixed(2),
+                    aportacion: aportacion.toFixed(2),
+                    interesGanado: interesGanado.toFixed(2),
+                    impuestoISR: aplicarIsr ? impuestoISR.toFixed(2) : '',
+                    interesDespuesISR: aplicarIsr ? interesDespuesISR.toFixed(2) : '',
+                    saldoFinal: saldo.toFixed(2)
+                });
+            }
+
+            const años = Math.floor(meses / 12);
+            const mesesRestantes = meses % 12;
+            const saldoFinalFormateado = saldo.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            document.getElementById('resultado').innerHTML = 
+                `Se necesitarán ${años} años y ${mesesRestantes} meses para alcanzar el objetivo de ahorro.<br>` +
+                `Saldo final del ahorro: $${saldoFinalFormateado}`;
+        }
+
+        function exportarCSV() {
+            let csvContent = aplicarIsr 
+                ? "data:text/csv;charset=utf-8,Mes,Saldo Inicial,Aportacion Mensual,Interes Ganado,Impuesto ISR,Interes despues de ISR,Saldo Final\n"
+                : "data:text/csv;charset=utf-8,Mes,Saldo Inicial,Aportacion Mensual,Interes Ganado,Saldo Final\n";
+            
+            historial.forEach(row => {
+                if (aplicarIsr) {
+                    csvContent += `${row.mes},${row.saldoInicial},${row.aportacion},${row.interesGanado},${row.impuestoISR},${row.interesDespuesISR},${row.saldoFinal}\n`;
+                } else {
+                    csvContent += `${row.mes},${row.saldoInicial},${row.aportacion},${row.interesGanado},${row.saldoFinal}\n`;
+                }
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "calculo_ahorro.csv");
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link); 
+        }
+    </script>
+
+</body>
+</html>

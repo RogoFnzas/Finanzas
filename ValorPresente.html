@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Valor Presente</title>
+    <style>
+        .input-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .input-group label {
+            flex: 0 0 220px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .input-group input,
+        .input-group button {
+            width: 150px; /* Ancho ajustado para los campos de entrada y el botón */
+        }
+        #resultado {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function formatearValorFuturo(input) {
+            // Eliminar las comas antes de la conversión a float
+            var valorSinComas = input.value.replace(/,/g, '');
+            var valorFloat = parseFloat(valorSinComas);
+            input.value = valorFloat.toLocaleString('es-MX');
+        }
+
+        function calcularValorPresente() {
+            var VF = document.getElementById('future_value').value.replace(/,/g, '');
+            var i = document.getElementById('inflation_rate').value / 100;
+            var n = document.getElementById('periods').value;
+            var VP = VF / Math.pow((1 + i), n);
+            var inflacion = VF - VP;
+            var total = VP + inflacion;
+            document.getElementById('resultado').innerText = `El Valor Presente es: ${VP.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (Inflación: ${inflacion.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}) Total: ${total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            return false; // Para prevenir que el formulario se envíe
+        }
+    </script>
+</head>
+<body>
+    <h1>Valor Presente</h1>
+    <form onsubmit="return calcularValorPresente();">
+        <div class="input-group">
+            <label for="future_value">Valor Futuro (VF):</label>
+            <input type="text" id="future_value" name="future_value" onblur="formatearValorFuturo(this);" required>
+        </div>
+        <div class="input-group">
+            <label for="inflation_rate">Tasa de Inflación (i) %:</label>
+            <input type="number" id="inflation_rate" name="inflation_rate" step="0.01" required>
+        </div>
+        <div class="input-group">
+            <label for="periods">Número de Periodos (n) en años:</label>
+            <input type="number" id="periods" name="periods" required>
+        </div>
+        <div class="input-group">
+            <button type="submit">Calcular</button>
+        </div>
+    </form>
+    <p id="resultado"></p>
+</body>
+</html>

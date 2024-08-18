@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inversión con Interés Compuesto</title>
+    <link rel="stylesheet" href="calculadora-inversion.css">
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center; 
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            margin-right: 5px; 
+            white-space: nowrap; 
+        }
+        .input-group input[type="number"],
+        .input-group input[type="checkbox"] {
+            margin: 0; 
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            white-space: nowrap; 
+        }
+        .total-item {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Inversión con Interés Compuesto</h2>
+    <div class="input-group">
+        <label for="frecuencia">Frecuencia:</label>
+        <select id="frecuencia" onchange="actualizarLeyendas()">
+            <option value="mensual">Mensual</option>
+            <option value="anual">Anual</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label for="aportacionInicial">Aportación Inicial:</label>
+        <input type="number" id="aportacionInicial" value="0">
+    </div>
+    <div class="input-group">
+        <label for="aportacionMensual">Aportación <span id="leyendaAportacion">Mensual</span>:</label>
+        <input type="number" id="aportacionMensual" value="0">
+    </div>
+    <div class="input-group">
+        <label for="interesAnual">Interés Anual (%):</label>
+        <input type="number" id="interesAnual" value="0">
+    </div>
+    <div class="input-group">
+        <label for="periodoMeses">Periodo (<span id="leyendaPeriodo">meses</span>):</label>
+        <input type="number" id="periodoMeses" value="0">
+    </div>
+    <div class="input-group">
+        <label for="aplicarISR">Aplicar ISR:</label>
+        <input type="checkbox" id="aplicarISR" onchange="toggleISRInput()">
+    </div>
+    <div class="input-group" id="grupoISR" style="display: none;">
+        <label for="porcentajeISR">Porcentaje ISR (%):</label>
+        <input type="number" id="porcentajeISR" value="0">
+    </div>
+    <button onclick="calcularInversion()">Calcular</button>
+    <button onclick="generarCSV()">Generar CSV</button>
+    <button onclick="resetearCampos()">Resetear</button>
+
+    <div id="resultado" class="result"></div>
+
+    <script>
+        function toggleISRInput() {
+            const aplicarISR = document.getElementById('aplicarISR').checked;
+            const grupoISR = document.getElementById('grupoISR');
+            grupoISR.style.display = aplicarISR ? 'flex' : 'none';
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function actualizarLeyendas() {
+            const frecuencia = document.getElementById('frecuencia').value;
+            const leyendaAportacion = document.getElementById('leyendaAportacion');
+            const leyendaPeriodo = document.getElementById('leyendaPeriodo');
+
+            if (frecuencia === 'mensual') {
+                leyendaAportacion.textContent = 'Mensual';
+                leyendaPeriodo.textContent = 'meses';
+            } else {
+                leyendaAportacion.textContent = 'Anual';
+                leyendaPeriodo.textContent = 'años';
+            }
+        }
+
+        function calcularInversion() {
+            // Obtener valores de los inputs
+            const aportacionInicial = parseFloat(document.getElementById('aportacionInicial').value);
+            const aportacionMensual = parseFloat(document.getElementById('aportacionMensual').value);
+            const interesAnual = parseFloat(document.getElementById('interesAnual').value) / 100;
+            const periodoMeses = parseInt(document.getElementById('periodoMeses').value);
+            const aplicarISR = document.getElementById('aplicarISR').checked;
+            const porcentajeISR = aplicarISR ? parseFloat(document.getElementById('porcentajeISR').value) / 100 : 0;
+            const frecuencia = document.getElementById('frecuencia').value;
+            const tasa = frecuencia === 'mensual' ? interesAnual / 12 : interesAnual;
+
+            let saldo = aportacionInicial;
+            let totalIntereses = 0;
+            let totalAportaciones = aportacionInicial;
+
+            if (frecuencia === 'mensual') {
+                totalAportaciones += aportacionMensual * periodoMeses;
+            } else if (frecuencia === 'anual') {
+                totalAportaciones += aportacionMensual * (periodoMeses); // // Lo corrijo quitando la división / 12 ((periodoMeses / 12))
+            }
+
+            for (let i = 0; i < periodoMeses; i++) {
+                saldo += aportacionMensual;
+                const intereses = saldo * tasa;
+                saldo += intereses;
+                totalIntereses += intereses;
+            }
+
+            // Mostrar resultados en tres renglones
+            let resultadoTexto = `
+                <div class="total-item">Total Aportaciones: $${numberWithCommas(totalAportaciones.toFixed(2))}</div>
+                <div class="total-item">Interés Compuesto : $${numberWithCommas(totalIntereses.toFixed(2))}</div>
+                <div class="total-item">Saldo Final	: $${numberWithCommas(saldo.toFixed(2))}</div>`;
+
+            if (aplicarISR) {
+                const ISR = totalIntereses * porcentajeISR;
+                saldo -= ISR;
+                resultadoTexto += `<div class="total-item">Total ISR: $${numberWithCommas(ISR.toFixed(2))}</div>`;
+            }
+
+            document.getElementById('resultado').innerHTML = resultadoTexto;
+        }
+
+        function generarCSV() {
+            const aportacionInicial = parseFloat(document.getElementById('aportacionInicial').value);
+            const aportacionMensual = parseFloat(document.getElementById('aportacionMensual').value);
+            const interesAnual = parseFloat(document.getElementById('interesAnual').value) / 100;
+            const periodoMeses = parseInt(document.getElementById('periodoMeses').value);
+            const aplicarISR = document.getElementById('aplicarISR').checked;
+            const porcentajeISR = aplicarISR ? parseFloat(document.getElementById('porcentajeISR').value) / 100 : 0;
+            const frecuencia = document.getElementById('frecuencia').value;
+            const tasa = frecuencia === 'mensual' ? interesAnual / 12 : interesAnual;
+
+            let saldo = aportacionInicial;
+            let totalIntereses = 0;
+            let totalAportaciones = aportacionInicial;
+            let csvContent = "data:text/csv;charset=utf-8,";
+
+            if (frecuencia === 'mensual') {
+                totalAportaciones += aportacionMensual * periodoMeses;
+            } else if (frecuencia === 'anual') {
+                totalAportaciones += aportacionMensual * (periodoMeses); // Lo corrijo quitando la división / 12 ((periodoMeses / 12))
+            }
+
+            // Encabezados (sin acentos)
+            csvContent += "Calculadora de Inversion con Interes Compuesto\n";
+            csvContent += `Periodo,Saldo Inicial,Aportacion ${frecuencia === 'mensual' ? 'Mensual' : 'Anual'},Interes Compuesto,ISR,Saldo Final\n`;
+
+            for (let i = 0; i < periodoMeses; i++) {
+                let saldoInicial = saldo;
+                saldo += aportacionMensual;
+                const intereses = saldo * tasa;
+                saldo += intereses;
+                totalIntereses += intereses;
+
+                let ISR = aplicarISR ? intereses * porcentajeISR : 0;
+                let saldoFinal = saldo - ISR;
+
+                csvContent += `${i + 1},${saldoInicial.toFixed(2)},${aportacionMensual.toFixed(2)},${intereses.toFixed(2)},${ISR.toFixed(2)},${saldoFinal.toFixed(2)}\n`;
+            }
+
+            csvContent += `\nTotal,,${totalAportaciones.toFixed(2)},${totalIntereses.toFixed(2)},,\n`;
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "resultado_inversion.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function resetearCampos() {
+            document.getElementById('aportacionInicial').value = 0;
+            document.getElementById('aportacionMensual').value = 0;
+            document.getElementById('interesAnual').value = 0;
+            document.getElementById('periodoMeses').value = 0;
+            document.getElementById('aplicarISR').checked = false;
+            document.getElementById('porcentajeISR').value = 0;
+            document.getElementById('resultado').innerHTML = '';
+            actualizarLeyendas();
+        }
+
+        actualizarLeyendas();
+    </script>
+</body>
+</html>
