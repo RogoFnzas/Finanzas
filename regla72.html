@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Regla del 72</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: orange;
+        }
+        p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: orange;
+        }
+        /* Ajuste para el campo de texto de inversión */
+        input[type="text"] { /* Cambiado de type="number" a type="text" */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-bottom: 20px;
+            background-color: #555;
+            color: white;
+            font-size: 1em;
+        }
+        input[type="number"] { /* Para la tasa, sigue siendo number */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-bottom: 20px;
+            background-color: #555;
+            color: white;
+            font-size: 1em;
+        }
+        input::placeholder {
+            color: #ccc;
+        }
+        button {
+            background-color: orange;
+            color: black;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: darkorange;
+        }
+        #resultado {
+            margin-top: 25px;
+            margin-bottom: 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: orange;
+        }
+        .variable-color {
+            color: orange;
+        }
+        .back-button {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora Regla del 72</h1>
+        <p>La **Regla del 72** es una fórmula sencilla para estimar el tiempo que tardará una inversión en duplicar su valor, dada una tasa de rendimiento anual fija. </p>
+
+        <label for="montoInversion">Ingresa tu inversión inicial ($):</label>
+        <input type="text" id="montoInversion" placeholder="Por ejemplo, 1,000" onkeyup="formatNumberInput(this)">
+
+        <label for="tasaInteres">Ingresa la tasa de interés anual (ej. 7 para 7%):</label>
+        <input type="number" id="tasaInteres" placeholder="Por ejemplo, 7">
+        
+        <button onclick="calcularRegla72()">Calcular</button>
+        
+        <div id="resultado"></div>
+
+        <a href="index.html" class="back-button">Menú principal</a>
+    </div>
+
+    <script>
+        // Función para formatear el número con comas mientras se escribe
+        function formatNumberInput(input) {
+            // Obtener el valor actual y limpiar cualquier carácter no numérico excepto el punto decimal
+            let value = input.value.replace(/[^0-9.]/g, '');
+
+            // Si hay más de un punto decimal, mantener solo el primero
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+
+            // Convertir a número para formatear, luego a cadena con formato de moneda
+            let numberValue = parseFloat(value);
+            if (!isNaN(numberValue)) {
+                // Usar toLocaleString para añadir comas. Asegurarse de no añadir decimales extra si no son deseados
+                // Y manejar el caso de la coma flotante para que no elimine números después del punto
+                let formattedValue = numberValue.toLocaleString('en-US', {
+                    minimumFractionDigits: 0, // No forzar decimales si no los hay
+                    maximumFractionDigits: 2  // Permitir hasta 2 decimales
+                });
+
+                // Si el valor original terminaba en '.', asegurarse de que se mantenga.
+                if (value.endsWith('.') && !formattedValue.includes('.')) {
+                    formattedValue += '.';
+                }
+                 // Si el valor original tenía un decimal y este está incompleto (ej. 123.), mantenerlo.
+                const decimalIndex = value.indexOf('.');
+                if (decimalIndex !== -1 && decimalIndex === value.length -1) {
+                    formattedValue = formattedValue.split('.')[0] + '.';
+                } else if (decimalIndex !== -1 && value.substring(decimalIndex + 1).length < 2 && value.substring(decimalIndex + 1).length > 0) {
+                     // Si el número tiene decimales pero solo uno (ej. 123.5), asegúrate de que el toLocaleString no le agregue un cero.
+                     // Esto puede ser un poco complicado con toLocaleString, a veces es mejor construirlo manualmente
+                     // o dejar que toLocaleString lo maneje al final del cálculo.
+                     // Para la entrada, solo queremos las comas para los enteros.
+                     // Vamos a reajustar para solo formatear la parte entera con comas.
+                     const [integerPart, decimalPart] = value.split('.');
+                     formattedValue = parseInt(integerPart).toLocaleString('en-US');
+                     if (decimalPart !== undefined) {
+                         formattedValue += '.' + decimalPart;
+                     }
+                }
+
+
+                input.value = formattedValue;
+            } else {
+                // Si el valor no es un número válido (ej. solo .), limpiar el campo
+                input.value = '';
+            }
+        }
+
+
+        function calcularRegla72() {
+            const montoInput = document.getElementById('montoInversion');
+            const tasaInput = document.getElementById('tasaInteres');
+            const resultadoDiv = document.getElementById('resultado');
+            
+            // Limpiar las comas para el cálculo
+            const montoSinComas = montoInput.value.replace(/,/g, '');
+            const monto = parseFloat(montoSinComas);
+            
+            const tasa = parseFloat(tasaInput.value);
+
+            if (isNaN(monto) || monto <= 0 || isNaN(tasa) || tasa <= 0) {
+                resultadoDiv.textContent = 'Por favor, ingresa valores válidos y positivos para la inversión y la tasa.';
+                return;
+            }
+
+            const años = 72 / tasa;
+            const inversionDuplicada = monto * 2;
+
+            // Formatear los números para la salida
+            const montoFormateado = monto.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const inversionDuplicadaFormateada = inversionDuplicada.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            resultadoDiv.innerHTML = `Con una tasa del <span class="variable-color">${tasa}%</span>, tu inversión de <span class="variable-color">$${montoFormateado}</span> se duplicará a <span class="variable-color">$${inversionDuplicadaFormateada}</span> en aproximadamente <span class="variable-color">${años.toFixed(2)}</span> años.`;
+        }
+    </script>
+
+    <div class="footer">
+        <p>"El mejor momento para invertir fue hace 20 años. El segundo mejor momento es hoy."</p>
+    </div>
+</body>
+</html>

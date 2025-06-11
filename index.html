@@ -3,51 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú de Calculadoras</title>
+    <title>Sistema Financiero</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff7f50, #1e90ff);
+            color: #ffffff;
         }
-        .menu {
-            margin-bottom: 20px;
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
         }
-        .menu select {
+        header h1 {
+            margin: 0;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
             padding: 10px;
-            font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.7);
         }
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
+        nav a {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        section {
+            padding: 10px;
+            background-color: #007bff;
+            margin: 5px 0;
+            border-radius: 8px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
             margin-top: 20px;
         }
     </style>
+
+    <style>
+        .rojo {
+            color: red;
+        }
+    </style>
+
+    <style>
+        .azul {
+            color: blue;
+        }
+    </style>
+
+
 </head>
 <body>
 
-    <h1>Menú de Calculadoras</h1>
+    <h1 style="text-align: center;">Menú Cálculos Financieros</h1>
+    <h2 style="text-align: center;">Financiero ROGO v.2.5</h2>
+    <nav>
+        <a href="InvInteresCompuesto.html"class="rojo">Inv. Interes Compuesto</a>
+        <a href="ValorPresente.html"      class="rojo">Valor Presente</a>
+        <a href="TiempoAhorro.html"       class="rojo">Tiempo en Ahorro IC</a>
+        <a href="Regla72.html"            class="rojo">Regla del 72 </a>
+        <a href="#GaAnuTot"               class="rojo">GAT</a>
+        <a href="WarrenBuffett.html"      class="rojo">Warren Buffett.html</a>
 
-    <div class="menu">
-        <label for="opciones">Selecciona una opción:</label>
-        <select id="opciones" onchange="cargarPagina()">
-            <option value="">-- Selecciona --</option>
-            <option value="InvInteresCompuesto.html">1. Inversión con Interés Compuesto</option>
-            <option value="ValorPresente.html">2. Valor Presente</option>
-            <option value="TiempoAhorro.html">3. Tiempo Ahorro con Interés Compuesto</option>
-        </select>
+
+    </nav>
+
+
+    <!-- <section id="Interes Compuesto">
+       // <h1>Inv. Interes Compuesto</h2>
+       //<p>Calculos con interes compuesto y como crece tu dinero con el tiempo</p>
+       //<a href="InvInteresCompuesto.html" class="rojo">Conoce más como crece tu dinero</a>
+      </section>
+    -->
+
+  </body>
+
+   <!--
+    <div class="footer">
+        <p>"W.F. El mejor momento para invertir fue hace 20 años. El segundo mejor momento es hoy."</p>
     </div>
+   -->
 
-    <iframe id="contenido" src="" title="Contenido del marco"></iframe>
+  </header>
 
-    <script>
-        function cargarPagina() {
-            var seleccion = document.getElementById('opciones').value;
-            if (seleccion) {
-                document.getElementById('contenido').src = seleccion;
-            }
-        }
-    </script>
-
-</body>
 </html>
