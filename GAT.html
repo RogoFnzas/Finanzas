@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de GAT y Ganancias de Inversión</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff7f50, #1e90ff); 
+            color: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            justify-content: center; 
+            padding: 20px; /* Añadimos un padding general para evitar que el contenido toque los bordes */
+            box-sizing: border-box; /* Aseguramos que el padding se incluya en el ancho/alto total */
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95); 
+            padding: 25px; /* Reducimos el padding */
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); 
+            max-width: 500px; /* Reducimos el ancho máximo */
+            width: 95%; /* Ocupa más porcentaje del ancho disponible */
+            margin: auto; /* Centra el contenedor vertical y horizontalmente si no hay suficiente contenido */
+            color: #333; 
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 25px; /* Reducimos el margen inferior */
+            font-size: 1.8em; /* Ajustamos el tamaño de la fuente */
+        }
+        .input-group {
+            margin-bottom: 12px; /* Reducimos el margen inferior */
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; 
+        }
+        .input-group label {
+            display: inline-block;
+            margin-right: 8px; /* Reducimos el margen derecho */
+            font-weight: bold;
+            min-width: 150px; /* Reducimos el ancho mínimo de la etiqueta */
+            color: #333; 
+            font-size: 0.95em; /* Ajustamos el tamaño de la fuente */
+        }
+        .input-group input[type="text"],
+        .input-group input[type="number"] {
+            flex-grow: 1;
+            padding: 8px; /* Reducimos el padding de los inputs */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px; /* Ajustamos el tamaño de la fuente */
+            text-align: right;
+        }
+        .input-group .currency-symbol,
+        .input-group .percentage-symbol {
+            margin-left: 4px; /* Reducimos el margen */
+            margin-right: 4px; /* Reducimos el margen */
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95em; /* Ajustamos el tamaño de la fuente */
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 18px; /* Reducimos el padding del botón */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px; /* Ajustamos el tamaño de la fuente */
+            width: 100%;
+            margin-top: 18px; /* Reducimos el margen superior */
+            transition: background-color 0.3s ease, transform 0.2s ease; 
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px); 
+        }
+        .results {
+            margin-top: 25px; /* Reducimos el margen superior */
+            border-top: 1px solid #eee;
+            padding-top: 18px; /* Reducimos el padding superior */
+            color: #333; 
+        }
+        .results p {
+            font-size: 16px; /* Ajustamos el tamaño de la fuente */
+            margin-bottom: 8px; /* Reducimos el margen inferior */
+        }
+        .results p strong {
+            color: #007bff;
+        }
+        .info {
+            font-size: 13px; /* Ajustamos el tamaño de la fuente */
+            color: #666;
+            margin-top: 18px; /* Reducimos el margen superior */
+            text-align: center;
+        }
+
+        /* Estilos para el botón de regreso */
+        .btn-regresar {
+            display: block;
+            margin: 25px auto 0 auto; /* Reducimos el margen superior */
+            padding: 10px 20px; /* Reducimos el padding */
+            background-color: #6c757d; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 200px; /* Reducimos el ancho máximo */
+            font-size: 0.95em; /* Ajustamos el tamaño de la fuente */
+        }
+
+        .btn-regresar:hover {
+            background-color: #5a6268; 
+            transform: translateY(-2px); 
+        }
+
+        /* Media queries para pantallas más pequeñas */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px; /* Más pequeño en móviles */
+            }
+            .container {
+                padding: 20px;
+                margin: 15px auto;
+                width: 98%; /* Ocupa casi todo el ancho en móviles */
+            }
+            h1 {
+                font-size: 1.6em; /* Ajuste para móviles */
+            }
+            .input-group label {
+                min-width: unset; 
+                width: 100%; /* La etiqueta ocupa todo el ancho */
+                margin-bottom: 5px;
+            }
+            .input-group input[type="text"],
+            .input-group input[type="number"] {
+                width: 100%; 
+                box-sizing: border-box; 
+                padding: 8px; /* Asegura el padding */
+            }
+            .input-group .currency-symbol,
+            .input-group .percentage-symbol {
+                align-self: flex-start; /* Alinea el símbolo al inicio */
+                margin-top: 0; /* Sin margen superior extra */
+                margin-left: 0; /* Sin margen izquierdo extra */
+            }
+            .btn-regresar {
+                padding: 8px 15px; /* Más pequeño en móviles */
+                font-size: 0.85em;
+                max-width: 180px; /* Un poco más pequeño en móviles */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GAT y Ganancias de Inversión</h1>
+
+        <div class="input-group">
+            <label for="tasaNominalAnual">Tasa Fija Anualizada (Nominal):</label>
+            <input type="number" id="tasaNominalAnual" step="0.01" min="0">
+            <span class="percentage-symbol">%</span>
+        </div>
+
+        <div class="input-group">
+            <label for="inflacion">Inflación Anualizada:</label>
+            <input type="number" id="inflacion" step="0.01" min="0">
+            <span class="percentage-symbol">%</span>
+        </div>
+
+        <div class="input-group">
+            <label for="comisiones">Comisiones Anuales:</label>
+            <input type="number" id="comisiones" step="0.01" min="0">
+            <span class="percentage-symbol">%</span>
+        </div>
+
+        <div class="input-group">
+            <label for="montoInversion">Monto de Inversión Inicial:</label>
+            <span class="currency-symbol">$</span>
+            <input type="text" id="montoInversion" oninput="formatAndValidateMonto(this)">
+        </div>
+
+        <button onclick="calcularResultados()">Calcular</button>
+
+        <div class="results">
+            <p>GAT Nominal: <strong id="gatNominal">0.00%</strong></p>
+            <p>GAT Real: <strong id="gatReal">0.00%</strong></p>
+            <p>Total de Ganancia Anual (Nominal): <strong id="gananciaAnualNominal">$0.00</strong></p>
+            <p>Total de Ganancia Anual Real: <strong id="gananciaAnualReal">$0.00</strong></p>
+        </div>
+
+        <div class="info">
+            <p><strong>Nota:</strong> Los cálculos de GAT son aproximados. La GAT Nominal se calcula considerando la capitalización diaria de la tasa nominal anual, menos las comisiones anuales.</p>
+        </div>
+
+        <a href="index.html" class="btn-regresar">Menú Principal</a>
+
+    </div>
+
+    <script>
+        function formatAndValidateMonto(input) {
+            let value = input.value.replace(/[^0-9.]/g, '');
+            let parts = value.split('.');
+            let integerPart = parts[0];
+            let decimalPart = parts.length > 1 ? '.' + parts[1].substring(0, 2) : '';
+
+            integerPart = new Intl.NumberFormat('en-US').format(parseFloat(integerPart.replace(/,/g, '')));
+            
+            input.value = integerPart + decimalPart;
+        }
+
+        function calcularResultados() {
+            const tasaNominalAnual = parseFloat(document.getElementById('tasaNominalAnual').value);
+            const inflacion = parseFloat(document.getElementById('inflacion').value);
+            const comisiones = parseFloat(document.getElementById('comisiones').value);
+            
+            const montoInversionFormatted = document.getElementById('montoInversion').value;
+            const montoInversion = parseFloat(montoInversionFormatted.replace(/,/g, ''));
+
+            if (isNaN(tasaNominalAnual) || isNaN(inflacion) || isNaN(comisiones) || isNaN(montoInversion) || 
+                tasaNominalAnual < 0 || inflacion < 0 || comisiones < 0 || montoInversion < 0) {
+                alert('Por favor, ingrese valores numéricos positivos en todos los campos.');
+                document.getElementById('gatNominal').textContent = '0.00%';
+                document.getElementById('gatReal').textContent = '0.00%';
+                document.getElementById('gananciaAnualNominal').textContent = '$0.00';
+                document.getElementById('gananciaAnualReal').textContent = '$0.00';
+                return;
+            }
+
+            const tasaNominalAnualDecimal = tasaNominalAnual / 100;
+            const inflacionDecimal = inflacion / 100;
+            const comisionesDecimal = comisiones / 100;
+
+            const n = 365; 
+
+            const tasaEfectivaAnualDecimal = Math.pow((1 + tasaNominalAnualDecimal / n), n) - 1;
+            const tasaEfectivaAnualPorcentaje = tasaEfectivaAnualDecimal * 100;
+
+            const gatNominal = tasaEfectivaAnualPorcentaje - comisiones; 
+            
+            const gatRealDecimal = ((1 + gatNominal / 100) / (1 + inflacionDecimal)) - 1;
+            const gatReal = gatRealDecimal * 100;
+
+            const gananciaAnualNominal = montoInversion * (gatNominal / 100);
+
+            const gananciaAnualReal = montoInversion * gatRealDecimal;
+
+            document.getElementById('gatNominal').textContent = gatNominal.toFixed(2) + '%';
+            document.getElementById('gatReal').textContent = gatReal.toFixed(2) + '%';
+
+            document.getElementById('gananciaAnualNominal').textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(gananciaAnualNominal);
+            document.getElementById('gananciaAnualReal').textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(gananciaAnualReal);
+        }
+    </script>
+
+</body>
+</html>
