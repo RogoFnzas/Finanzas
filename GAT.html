@@ -16,66 +16,69 @@
             align-items: center; 
             min-height: 100vh; 
             justify-content: center; 
-            padding: 20px; /* Añadimos un padding general para evitar que el contenido toque los bordes */
-            box-sizing: border-box; /* Aseguramos que el padding se incluya en el ancho/alto total */
+            padding: 20px; 
+            box-sizing: border-box; 
         }
         .container {
             background-color: rgba(255, 255, 255, 0.95); 
-            padding: 25px; /* Reducimos el padding */
+            padding: 25px; 
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); 
-            max-width: 500px; /* Reducimos el ancho máximo */
-            width: 95%; /* Ocupa más porcentaje del ancho disponible */
-            margin: auto; /* Centra el contenedor vertical y horizontalmente si no hay suficiente contenido */
+            max-width: 500px; 
+            width: 95%; 
+            margin: auto; 
             color: #333; 
         }
         h1 {
             color: #0056b3;
             text-align: center;
-            margin-bottom: 25px; /* Reducimos el margen inferior */
-            font-size: 1.8em; /* Ajustamos el tamaño de la fuente */
+            margin-bottom: 25px; 
+            font-size: 1.8em; 
         }
         .input-group {
-            margin-bottom: 12px; /* Reducimos el margen inferior */
+            margin-bottom: 12px; 
             display: flex;
             align-items: center;
             flex-wrap: wrap; 
         }
         .input-group label {
             display: inline-block;
-            margin-right: 8px; /* Reducimos el margen derecho */
+            margin-right: 8px; 
             font-weight: bold;
-            min-width: 150px; /* Reducimos el ancho mínimo de la etiqueta */
+            min-width: 150px; 
             color: #333; 
-            font-size: 0.95em; /* Ajustamos el tamaño de la fuente */
+            font-size: 0.95em; 
         }
         .input-group input[type="text"],
         .input-group input[type="number"] {
             flex-grow: 1;
-            padding: 8px; /* Reducimos el padding de los inputs */
+            padding: 8px; 
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 15px; /* Ajustamos el tamaño de la fuente */
+            font-size: 15px; 
             text-align: right;
+            /* Añadido para controlar el ancho visual de los inputs */
+            max-width: 150px; /* Ancho máximo para el input, puedes ajustarlo si 10 posiciones es muy poco visualmente */
+            box-sizing: border-box; /* Asegura que padding y borde se incluyan en max-width */
         }
         .input-group .currency-symbol,
         .input-group .percentage-symbol {
-            margin-left: 4px; /* Reducimos el margen */
-            margin-right: 4px; /* Reducimos el margen */
+            margin-left: 4px; 
+            margin-right: 4px; 
             font-weight: bold;
             color: #555;
-            font-size: 0.95em; /* Ajustamos el tamaño de la fuente */
+            font-size: 0.95em; 
         }
         button {
             background-color: #007bff;
             color: white;
-            padding: 10px 18px; /* Reducimos el padding del botón */
+            padding: 10px 18px; 
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px; /* Ajustamos el tamaño de la fuente */
+            font-size: 16px; 
             width: 100%;
-            margin-top: 18px; /* Reducimos el margen superior */
+            margin-top: 18px; 
             transition: background-color 0.3s ease, transform 0.2s ease; 
         }
         button:hover {
@@ -83,30 +86,30 @@
             transform: translateY(-2px); 
         }
         .results {
-            margin-top: 25px; /* Reducimos el margen superior */
+            margin-top: 25px; 
             border-top: 1px solid #eee;
-            padding-top: 18px; /* Reducimos el padding superior */
+            padding-top: 18px; 
             color: #333; 
         }
         .results p {
-            font-size: 16px; /* Ajustamos el tamaño de la fuente */
-            margin-bottom: 8px; /* Reducimos el margen inferior */
+            font-size: 16px; 
+            margin-bottom: 8px; 
         }
         .results p strong {
             color: #007bff;
         }
         .info {
-            font-size: 13px; /* Ajustamos el tamaño de la fuente */
+            font-size: 13px; 
             color: #666;
-            margin-top: 18px; /* Reducimos el margen superior */
+            margin-top: 18px; 
             text-align: center;
         }
 
         /* Estilos para el botón de regreso */
         .btn-regresar {
             display: block;
-            margin: 25px auto 0 auto; /* Reducimos el margen superior */
-            padding: 10px 20px; /* Reducimos el padding */
+            margin: 25px auto 0 auto; 
+            padding: 10px 20px; 
             background-color: #6c757d; 
             color: white;
             text-decoration: none;
@@ -115,8 +118,8 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             text-align: center;
-            max-width: 200px; /* Reducimos el ancho máximo */
-            font-size: 0.95em; /* Ajustamos el tamaño de la fuente */
+            max-width: 200px; 
+            font-size: 0.95em; 
         }
 
         .btn-regresar:hover {
@@ -127,37 +130,42 @@
         /* Media queries para pantallas más pequeñas */
         @media (max-width: 600px) {
             body {
-                padding: 15px; /* Más pequeño en móviles */
+                padding: 15px; 
             }
             .container {
                 padding: 20px;
                 margin: 15px auto;
-                width: 98%; /* Ocupa casi todo el ancho en móviles */
+                width: 98%; 
             }
             h1 {
-                font-size: 1.6em; /* Ajuste para móviles */
+                font-size: 1.6em; 
+            }
+            .input-group {
+                flex-direction: column; /* Apila elementos en pantallas pequeñas */
+                align-items: flex-start; /* Alinea etiquetas a la izquierda */
             }
             .input-group label {
                 min-width: unset; 
-                width: 100%; /* La etiqueta ocupa todo el ancho */
+                width: 100%; 
                 margin-bottom: 5px;
             }
             .input-group input[type="text"],
             .input-group input[type="number"] {
-                width: 100%; 
+                width: 100%; /* Ocupa todo el ancho disponible */
                 box-sizing: border-box; 
-                padding: 8px; /* Asegura el padding */
+                padding: 8px; 
+                max-width: unset; /* Deshace el max-width para inputs en móvil */
             }
             .input-group .currency-symbol,
             .input-group .percentage-symbol {
-                align-self: flex-start; /* Alinea el símbolo al inicio */
-                margin-top: 0; /* Sin margen superior extra */
-                margin-left: 0; /* Sin margen izquierdo extra */
+                align-self: flex-start; 
+                margin-top: 0; 
+                margin-left: 0; 
             }
             .btn-regresar {
-                padding: 8px 15px; /* Más pequeño en móviles */
+                padding: 8px 15px; 
                 font-size: 0.85em;
-                max-width: 180px; /* Un poco más pequeño en móviles */
+                max-width: 180px; 
             }
         }
     </style>
@@ -168,26 +176,26 @@
 
         <div class="input-group">
             <label for="tasaNominalAnual">Tasa Fija Anualizada (Nominal):</label>
-            <input type="number" id="tasaNominalAnual" step="0.01" min="0">
+            <input type="number" id="tasaNominalAnual" step="0.01" min="0" maxlength="10">
             <span class="percentage-symbol">%</span>
         </div>
 
         <div class="input-group">
             <label for="inflacion">Inflación Anualizada:</label>
-            <input type="number" id="inflacion" step="0.01" min="0">
+            <input type="number" id="inflacion" step="0.01" min="0" maxlength="10">
             <span class="percentage-symbol">%</span>
         </div>
 
         <div class="input-group">
             <label for="comisiones">Comisiones Anuales:</label>
-            <input type="number" id="comisiones" step="0.01" min="0">
+            <input type="number" id="comisiones" step="0.01" min="0" maxlength="10">
             <span class="percentage-symbol">%</span>
         </div>
 
         <div class="input-group">
             <label for="montoInversion">Monto de Inversión Inicial:</label>
             <span class="currency-symbol">$</span>
-            <input type="text" id="montoInversion" oninput="formatAndValidateMonto(this)">
+            <input type="text" id="montoInversion" oninput="formatAndValidateMonto(this)" maxlength="10">
         </div>
 
         <button onclick="calcularResultados()">Calcular</button>
@@ -203,27 +211,66 @@
             <p><strong>Nota:</strong> Los cálculos de GAT son aproximados. La GAT Nominal se calcula considerando la capitalización diaria de la tasa nominal anual, menos las comisiones anuales.</p>
         </div>
 
-        <a href="index.html" class="btn-regresar">Menú Principal</a>
+        <a href="index.xml" class="btn-regresar">Regresar al Menú Principal</a>
 
     </div>
 
     <script>
+        // La longitud máxima permitida para el valor formateado
+        const MAX_INPUT_LENGTH = 10; 
+
         function formatAndValidateMonto(input) {
-            let value = input.value.replace(/[^0-9.]/g, '');
+            // Eliminar todos los caracteres que no sean dígitos o puntos decimales
+            let value = input.value.replace(/[^0-9.]/g, ''); 
+
+            // Dividir el valor en parte entera y parte decimal
             let parts = value.split('.');
             let integerPart = parts[0];
-            let decimalPart = parts.length > 1 ? '.' + parts[1].substring(0, 2) : '';
+            let decimalPart = parts.length > 1 ? '.' + parts[1] : '';
 
-            integerPart = new Intl.NumberFormat('en-US').format(parseFloat(integerPart.replace(/,/g, '')));
+            // Limitar la longitud de la parte entera
+            if (integerPart.length > MAX_INPUT_LENGTH) {
+                integerPart = integerPart.substring(0, MAX_INPUT_LENGTH);
+            }
+
+            // Eliminar comas antes de formatear para que el `maxlength` CSS funcione correctamente
+            // y para que Intl.NumberFormat no añada comas extra en el proceso
+            integerPart = integerPart.replace(/,/g, ''); 
+
+            // Formatear la parte entera con separadores de miles
+            integerPart = new Intl.NumberFormat('en-US').format(parseFloat(integerPart));
+
+            // Limitar la longitud de la parte decimal a 2 dígitos
+            if (decimalPart.length > 0) {
+                decimalPart = '.' + decimalPart.substring(1, Math.min(decimalPart.length, 3)); // 1 para el punto, 2 para los decimales
+            }
+
+            let finalValue = integerPart + decimalPart;
+
+            // Asegurarse de que la longitud total no exceda MAX_INPUT_LENGTH (excluyendo el punto decimal y las comas)
+            // Esta lógica es un poco más compleja porque el formato añade comas
+            // La idea es evitar que el usuario escriba más de 10 dígitos "útiles".
+            if (finalValue.replace(/[^0-9.]/g, '').length > MAX_INPUT_LENGTH) {
+                // Si al eliminar comas y puntos supera, truncamos
+                let rawNumbers = finalValue.replace(/[^0-9]/g, '');
+                if (rawNumbers.length > MAX_INPUT_LENGTH) {
+                    finalValue = rawNumbers.substring(0, MAX_INPUT_LENGTH);
+                    // Reformatear si se trunca
+                    let tempIntegerPart = finalValue.split('.')[0];
+                    finalValue = new Intl.NumberFormat('en-US').format(parseFloat(tempIntegerPart)) + (finalValue.includes('.') ? '.' + finalValue.split('.')[1] : '');
+                }
+            }
             
-            input.value = integerPart + decimalPart;
+            input.value = finalValue;
         }
 
         function calcularResultados() {
+            // Se usa .value para obtener el texto del input
             const tasaNominalAnual = parseFloat(document.getElementById('tasaNominalAnual').value);
             const inflacion = parseFloat(document.getElementById('inflacion').value);
             const comisiones = parseFloat(document.getElementById('comisiones').value);
             
+            // Para montoInversion, eliminamos las comas antes de convertir a número
             const montoInversionFormatted = document.getElementById('montoInversion').value;
             const montoInversion = parseFloat(montoInversionFormatted.replace(/,/g, ''));
 
