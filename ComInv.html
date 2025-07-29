@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador: Inmueble vs. Bolsa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: white;
+            min-height: 100vh;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .panel {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        .panel h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 8px;
+            text-align: center;
+        }
+        .compact-form {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 8px;
+            align-items: center;
+        }
+        .compact-form label {
+            margin: 0;
+            text-align: right;
+            font-size: 12px;
+        }
+        .compact-form input[type="number"],
+        .compact-form input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: none;
+            background: rgba(255,255,255,0.8);
+        }
+        .compact-checkbox {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin: 3px 0;
+            justify-content: center;
+        }
+        .compact-checkbox input {
+            margin-right: 8px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ff5252;
+        }
+        .back-button {
+            background: rgba(255,255,255,0.2);
+        }
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .result-card {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .result-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            text-align: center;
+        }
+        .result-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #ffeb3b;
+            text-align: center;
+        }
+        .result-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin: 3px 0;
+        }
+        .winner {
+            background: rgba(76,175,80,0.3);
+            border: 1px solid #4CAF50;
+        }
+        .comparison-result {
+            grid-column: 1/-1;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .comparison-grid, .results {
+                grid-template-columns: 1fr;
+            }
+            .compact-form {
+                grid-template-columns: 100px 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Comparador de Inversiones: Inmueble vs. Bolsa</h1>
+        
+        <div class="comparison-grid">
+            <!-- Sección Inmueble -->
+            <div class="panel">
+                <h2>Inmueble en Renta</h2>
+                <div class="compact-form">
+                    <label for="propertyValue">Valor ($):</label>
+                    <input type="text" id="propertyValue" value="1,000,000">
+                    
+                    <div class="compact-checkbox">
+                        <input type="checkbox" id="fullyPaid" checked> 
+                        <label for="fullyPaid">Propiedad 100% pagada</label>
+                    </div>
+                    
+                    <div id="mortgageFields" style="display:none; grid-column: span 2">
+                        <div class="compact-form" style="margin-left: 20px">
+                            <label for="depositPercent">Enganche (%):</label>
+                            <input type="number" id="depositPercent" value="20">
+                            
+                            <label for="mortgageRate">Interés (%):</label>
+                            <input type="number" id="mortgageRate" value="4.5" step="0.1">
+                            
+                            <label for="loanTerm">Plazo (años):</label>
+                            <input type="number" id="loanTerm" value="30">
+                        </div>
+                    </div>
+                    
+                    <label for="monthlyRent">Renta ($):</label>
+                    <input type="text" id="monthlyRent" value="10,000">
+                    
+                    <label for="vacancyRate">Vacancia (%):</label>
+                    <input type="number" id="vacancyRate" value="5" step="0.1">
+                    
+                    <label for="annualCosts">Costos ($):</label>
+                    <input type="text" id="annualCosts" value="20,000">
+                    
+                    <label for="appreciationRate">Plusvalía (%):</label>
+                    <input type="number" id="appreciationRate" value="3" step="0.1">
+                    
+                    <label for="propertyTaxRate">Impuestos (%):</label>
+                    <input type="number" id="propertyTaxRate" value="15" step="0.1">
+                </div>
+            </div>
+            
+            <!-- Sección Bolsa -->
+            <div class="panel">
+                <h2>Inversión en Bolsa</h2>
+                <div class="compact-form">
+                    <label for="initialInvestment">Monto ($):</label>
+                    <input type="text" id="initialInvestment" value="1,000,000">
+                    
+                    <label for="stockReturn">Rentabilidad (%):</label>
+                    <input type="number" id="stockReturn" value="7" step="0.1">
+                    
+                    <label for="years">Horizonte (años):</label>
+                    <input type="number" id="years" value="10">
+                    
+                    <div class="compact-checkbox">
+                        <input type="checkbox" id="reinvestDividends" checked> 
+                        <label for="reinvestDividends">Reinvertir dividendos</label>
+                    </div>
+                    
+                    <label for="stockTaxRate">Impuestos (%):</label>
+                    <input type="number" id="stockTaxRate" value="15" step="0.1">
+                    
+                    <label for="inflationRate">Inflación (%):</label>
+                    <input type="number" id="inflationRate" value="2" step="0.1">
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button onclick="calculate()">Calcular Rentabilidad</button>
+            <a href="index.html" class="back-button button">Regresar</a>
+        </div>
+        
+        <div class="results" id="results" style="display:none">
+            <div class="result-card" id="propertyResult">
+                <h3>Inmueble en Renta</h3>
+                <div class="result-value" id="propertyFinalValue"></div>
+                <div id="propertyDetails"></div>
+            </div>
+            <div class="result-card" id="stockResult">
+                <h3>Bolsa de Valores</h3>
+                <div class="result-value" id="stockFinalValue"></div>
+                <div id="stockDetails"></div>
+            </div>
+            <div class="comparison-result" id="comparisonResult"></div>
+        </div>
+    </div>
+
+    <script>
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        function parseFormattedNumber(str) {
+            return parseFloat(str.replace(/,/g, ''));
+        }
+        document.getElementById("fullyPaid").addEventListener("change", function() {
+            document.getElementById("mortgageFields").style.display = this.checked ? "none" : "block";
+        });
+
+        function calculate() {
+            // Obtener valores
+            const propertyValue = parseFormattedNumber(document.getElementById("propertyValue").value);
+            const fullyPaid = document.getElementById("fullyPaid").checked;
+            const monthlyRent = parseFormattedNumber(document.getElementById("monthlyRent").value);
+            const vacancyRate = parseFloat(document.getElementById("vacancyRate").value)/100;
+            const annualCosts = parseFormattedNumber(document.getElementById("annualCosts").value);
+            const appreciationRate = parseFloat(document.getElementById("appreciationRate").value)/100;
+            const propertyTaxRate = parseFloat(document.getElementById("propertyTaxRate").value)/100;
+            
+            const initialInvestment = parseFormattedNumber(document.getElementById("initialInvestment").value);
+            const stockReturn = parseFloat(document.getElementById("stockReturn").value)/100;
+            const years = parseInt(document.getElementById("years").value);
+            const reinvestDividends = document.getElementById("reinvestDividends").checked;
+            const stockTaxRate = parseFloat(document.getElementById("stockTaxRate").value)/100;
+            const inflationRate = parseFloat(document.getElementById("inflationRate").value)/100;
+
+            // Calcular inmueble
+            let downPayment = fullyPaid ? propertyValue : propertyValue * (parseFloat(document.getElementById("depositPercent").value)/100);
+            let loanAmount = fullyPaid ? 0 : propertyValue - downPayment;
+
+            const annualRent = monthlyRent * 12 * (1 - vacancyRate);
+            const netIncome = annualRent - annualCosts;
+            const propertyFinalValue = propertyValue * Math.pow(1 + appreciationRate, years);
+            const propertyGain = propertyFinalValue - propertyValue;
+            const propertyTax = propertyGain * propertyTaxRate;
+            const propertyNetValue = propertyFinalValue - propertyTax;
+            const propertyROI = (netIncome * years + (propertyNetValue - propertyValue)) / downPayment;
+
+            // Calcular bolsa
+            const dividendPortion = 0.3;
+            let stockFinalValue, stockGain;
+            if (reinvestDividends) {
+                stockFinalValue = initialInvestment * Math.pow(1 + stockReturn, years);
+                stockGain = stockFinalValue - initialInvestment;
+            } else {
+                const growthReturn = stockReturn * (1-dividendPortion);
+                const capitalGrowth = initialInvestment * Math.pow(1 + growthReturn, years);
+                const totalDividends = initialInvestment * (stockReturn * dividendPortion) * years;
+                stockFinalValue = capitalGrowth + totalDividends;
+                stockGain = stockFinalValue - initialInvestment;
+            }
+            const stockTax = stockGain * stockTaxRate;
+            const stockNetValue = stockFinalValue - stockTax;
+            const stockROI = (stockNetValue - initialInvestment) / initialInvestment;
+
+            // Mostrar resultados
+            document.getElementById("results").style.display = "grid";
+            document.getElementById("propertyFinalValue").textContent = "$" + formatNumber(Math.round(propertyNetValue));
+            document.getElementById("stockFinalValue").textContent = "$" + formatNumber(Math.round(stockNetValue));
+            
+            const propertyDetails = document.getElementById("propertyDetails");
+            propertyDetails.innerHTML = '';
+            
+            function addLine(container, label, value) {
+                const line = document.createElement('div');
+                line.className = 'result-line';
+                line.innerHTML = `<span>${label}</span><span>${value}</span>`;
+                container.appendChild(line);
+            }
+            
+            addLine(propertyDetails, 'Retorno total:', `${(propertyROI*100).toFixed(2)}%`);
+            addLine(propertyDetails, 'Ingresos renta:', `$${formatNumber(Math.round(annualRent * years))}`);
+            addLine(propertyDetails, 'Costos totales:', `$${formatNumber(Math.round(annualCosts * years))}`);
+            addLine(propertyDetails, 'Plusvalía:', `$${formatNumber(Math.round(propertyGain))}`);
+            addLine(propertyDetails, 'Impuestos:', `$${formatNumber(Math.round(propertyTax))}`);
+            
+            const stockDetails = document.getElementById("stockDetails");
+            stockDetails.innerHTML = '';
+            addLine(stockDetails, 'Retorno:', `${(stockROI*100).toFixed(2)}%`);
+            addLine(stockDetails, 'Ganancias:', `$${formatNumber(Math.round(stockGain))}`);
+            addLine(stockDetails, 'Impuestos:', `$${formatNumber(Math.round(stockTax))}`);
+            addLine(stockDetails, 'Dividendos:', `${reinvestDividends?'Reinvertidos':'No reinvertidos'}`);
+
+            // Resultado comparativo
+            let comparisonMessage = "";
+            if (propertyNetValue > stockNetValue) {
+                document.getElementById("propertyResult").classList.add("winner");
+                comparisonMessage = "¡La renta de inmueble es más rentable!";
+            } else {
+                document.getElementById("stockResult").classList.add("winner");
+                comparisonMessage = "¡La bolsa de valores es más rentable!";
+            }
+            document.getElementById("comparisonResult").textContent = comparisonMessage;
+        }
+
+        // Auto-formatear inputs
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener("blur", function() {
+                if (this.value) this.value = formatNumber(parseFormattedNumber(this.value));
+            });
+        });
+    </script>
+</body>
+</html>
