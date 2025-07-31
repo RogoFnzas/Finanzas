@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador: Inmueble vs. Bolsa</title>
+    <title>Comparador Avanzado: Inmueble vs. Bolsa</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
         body {
@@ -137,6 +137,12 @@
         .winner {
             background: rgba(76,175,80,0.3);
             border: 1px solid #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(76,175,80,0); }
+            100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); }
         }
         .comparison-result {
             grid-column: 1/-1;
@@ -233,7 +239,7 @@
         
         <div class="button-container">
             <button onclick="calculate()">Calcular Rentabilidad</button>
-            <a href="index.html" class="back-button button">Regresar</a>
+            <button onclick="window.location.href='index.html'" class="back-button">Regresar</button>
         </div>
         
         <div class="results" id="results" style="display:none">
@@ -252,18 +258,32 @@
     </div>
 
     <script>
+        // Función para formatear números con comas
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
+        
+        // Función para parsear números con comas
         function parseFormattedNumber(str) {
-            return parseFloat(str.replace(/,/g, ''));
+            return parseFloat(str.replace(/,/g, '')) || 0;
         }
+        
+        // Toggle campos de hipoteca
         document.getElementById("fullyPaid").addEventListener("change", function() {
             document.getElementById("mortgageFields").style.display = this.checked ? "none" : "block";
         });
-
+        
+        // Función para calcular pago mensual de hipoteca
+        function calculateMortgage(principal, annualRate, years) {
+            const monthlyRate = annualRate / 100 / 12;
+            const payments = years * 12;
+            const x = Math.pow(1 + monthlyRate, payments);
+            return principal * monthlyRate * x / (x - 1);
+        }
+        
+        // Función principal de cálculo
         function calculate() {
-            // Obtener valores
+            // Obtener valores del inmueble
             const propertyValue = parseFormattedNumber(document.getElementById("propertyValue").value);
             const fullyPaid = document.getElementById("fullyPaid").checked;
             const monthlyRent = parseFormattedNumber(document.getElementById("monthlyRent").value);
@@ -272,47 +292,59 @@
             const appreciationRate = parseFloat(document.getElementById("appreciationRate").value)/100;
             const propertyTaxRate = parseFloat(document.getElementById("propertyTaxRate").value)/100;
             
+            // Obtener valores de bolsa
             const initialInvestment = parseFormattedNumber(document.getElementById("initialInvestment").value);
             const stockReturn = parseFloat(document.getElementById("stockReturn").value)/100;
             const years = parseInt(document.getElementById("years").value);
             const reinvestDividends = document.getElementById("reinvestDividends").checked;
             const stockTaxRate = parseFloat(document.getElementById("stockTaxRate").value)/100;
             const inflationRate = parseFloat(document.getElementById("inflationRate").value)/100;
-
-            // Calcular inmueble
-            let downPayment = fullyPaid ? propertyValue : propertyValue * (parseFloat(document.getElementById("depositPercent").value)/100);
-            let loanAmount = fullyPaid ? 0 : propertyValue - downPayment;
-
+            
+            // ===== CÁLCULO INMUEBLE =====
+            // Calcular pagos de hipoteca si aplica
+            let annualMortgagePayments = 0;
+            if (!fullyPaid) {
+                const mortgageRate = parseFloat(document.getElementById("mortgageRate").value);
+                const loanTerm = parseInt(document.getElementById("loanTerm").value);
+                const monthlyPayment = calculateMortgage(propertyValue * (1 - parseFloat(document.getElementById("depositPercent").value)/100), mortgageRate, loanTerm);
+                annualMortgagePayments = monthlyPayment * 12;
+            }
+            
+            // Calcular flujos
             const annualRent = monthlyRent * 12 * (1 - vacancyRate);
-            const netIncome = annualRent - annualCosts;
+            const netIncome = annualRent - annualCosts - annualMortgagePayments;
             const propertyFinalValue = propertyValue * Math.pow(1 + appreciationRate, years);
             const propertyGain = propertyFinalValue - propertyValue;
             const propertyTax = propertyGain * propertyTaxRate;
             const propertyNetValue = propertyFinalValue - propertyTax;
-            const propertyROI = (netIncome * years + (propertyNetValue - propertyValue)) / downPayment;
-
-            // Calcular bolsa
-            const dividendPortion = 0.3;
+            const totalIngresosNetos = netIncome * years;
+            const propertyTotal = propertyNetValue + totalIngresosNetos; // Suma corregida
+            
+            // ===== CÁLCULO BOLSA =====
+            // Ajustar por inflación
+            const realStockReturn = (1 + stockReturn) / (1 + inflationRate) - 1;
+            
             let stockFinalValue, stockGain;
             if (reinvestDividends) {
-                stockFinalValue = initialInvestment * Math.pow(1 + stockReturn, years);
+                stockFinalValue = initialInvestment * Math.pow(1 + realStockReturn, years);
                 stockGain = stockFinalValue - initialInvestment;
             } else {
-                const growthReturn = stockReturn * (1-dividendPortion);
+                const growthReturn = realStockReturn * 0.7; // 70% crecimiento, 30% dividendos
                 const capitalGrowth = initialInvestment * Math.pow(1 + growthReturn, years);
-                const totalDividends = initialInvestment * (stockReturn * dividendPortion) * years;
+                const totalDividends = initialInvestment * (realStockReturn * 0.3) * years;
                 stockFinalValue = capitalGrowth + totalDividends;
                 stockGain = stockFinalValue - initialInvestment;
             }
+            
             const stockTax = stockGain * stockTaxRate;
             const stockNetValue = stockFinalValue - stockTax;
-            const stockROI = (stockNetValue - initialInvestment) / initialInvestment;
-
-            // Mostrar resultados
+            
+            // ===== MOSTRAR RESULTADOS =====
             document.getElementById("results").style.display = "grid";
-            document.getElementById("propertyFinalValue").textContent = "$" + formatNumber(Math.round(propertyNetValue));
+            document.getElementById("propertyFinalValue").textContent = "$" + formatNumber(Math.round(propertyTotal));
             document.getElementById("stockFinalValue").textContent = "$" + formatNumber(Math.round(stockNetValue));
             
+            // Detalles inmueble
             const propertyDetails = document.getElementById("propertyDetails");
             propertyDetails.innerHTML = '';
             
@@ -323,35 +355,46 @@
                 container.appendChild(line);
             }
             
-            addLine(propertyDetails, 'Retorno total:', `${(propertyROI*100).toFixed(2)}%`);
-            addLine(propertyDetails, 'Ingresos renta:', `$${formatNumber(Math.round(annualRent * years))}`);
-            addLine(propertyDetails, 'Costos totales:', `$${formatNumber(Math.round(annualCosts * years))}`);
-            addLine(propertyDetails, 'Plusvalía:', `$${formatNumber(Math.round(propertyGain))}`);
-            addLine(propertyDetails, 'Impuestos:', `$${formatNumber(Math.round(propertyTax))}`);
+            addLine(propertyDetails, 'Ingresos netos acumulados:', `$${formatNumber(Math.round(totalIngresosNetos))}`);
+            addLine(propertyDetails, 'Plusvalía neta:', `$${formatNumber(Math.round(propertyNetValue))}`);
+            addLine(propertyDetails, 'TOTAL INMUEBLE:', `$${formatNumber(Math.round(propertyTotal))}`);
             
+            // Detalles bolsa
             const stockDetails = document.getElementById("stockDetails");
             stockDetails.innerHTML = '';
-            addLine(stockDetails, 'Retorno:', `${(stockROI*100).toFixed(2)}%`);
-            addLine(stockDetails, 'Ganancias:', `$${formatNumber(Math.round(stockGain))}`);
+            addLine(stockDetails, 'Ganancias brutas:', `$${formatNumber(Math.round(stockGain))}`);
             addLine(stockDetails, 'Impuestos:', `$${formatNumber(Math.round(stockTax))}`);
-            addLine(stockDetails, 'Dividendos:', `${reinvestDividends?'Reinvertidos':'No reinvertidos'}`);
-
+            addLine(stockDetails, 'TOTAL BOLSA:', `$${formatNumber(Math.round(stockNetValue))}`);
+            addLine(stockDetails, 'Dividendos:', `${reinvestDividends ? 'Reinvertidos' : 'No reinvertidos'}`);
+            
             // Resultado comparativo
             let comparisonMessage = "";
-            if (propertyNetValue > stockNetValue) {
+            if (propertyTotal > stockNetValue) {
                 document.getElementById("propertyResult").classList.add("winner");
-                comparisonMessage = "¡La renta de inmueble es más rentable!";
+                document.getElementById("stockResult").classList.remove("winner");
+                comparisonMessage = `¡El INMUEBLE es más rentable!<br>($${formatNumber(Math.round(propertyTotal))} vs $${formatNumber(Math.round(stockNetValue))})`;
             } else {
                 document.getElementById("stockResult").classList.add("winner");
-                comparisonMessage = "¡La bolsa de valores es más rentable!";
+                document.getElementById("propertyResult").classList.remove("winner");
+                comparisonMessage = `¡La BOLSA es más rentable!<br>($${formatNumber(Math.round(stockNetValue))} vs $${formatNumber(Math.round(propertyTotal))})`;
             }
-            document.getElementById("comparisonResult").textContent = comparisonMessage;
+            document.getElementById("comparisonResult").innerHTML = comparisonMessage;
         }
-
-        // Auto-formatear inputs
+        
+        // Inicializar el checkbox de hipoteca
+        document.getElementById("fullyPaid").dispatchEvent(new Event('change'));
+        
+        // Formatear inputs al perder foco
         document.querySelectorAll('input[type="text"]').forEach(input => {
             input.addEventListener("blur", function() {
-                if (this.value) this.value = formatNumber(parseFormattedNumber(this.value));
+                if (this.value) {
+                    this.value = formatNumber(parseFormattedNumber(this.value));
+                }
+            });
+            
+            // Validar mientras se escribe
+            input.addEventListener("input", function() {
+                this.value = this.value.replace(/[^0-9,]/g, '');
             });
         });
     </script>
