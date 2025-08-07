@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo Elite</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: #FFA500;
+            text-align: center;
+        }
+        header {
+            background-color: #000000;
+            padding: 30px 20px;
+            border-bottom: 3px solid #FFA500;
+        }
+        h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+        }
+        .date {
+            font-size: 1.3em;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .content {
+            padding: 50px 20px;
+        }
+        .execute-btn {
+            display: inline-block;
+            background-color: #FFA500;
+            color: #000000;
+            padding: 20px 60px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 40px;
+            border: 3px solid #000000;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 165, 0, 0.7);
+        }
+        .execute-btn:hover {
+            background-color: #FF8C00;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.9);
+        }
+        .instructions {
+            margin-top: 30px;
+            font-size: 1.1em;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CÁLCULO ELITE</h1>
+        <div class="date" id="current-date"></div>
+    </header>
+
+    <div class="content">
+        <h2>PLATAFORMA DE CÁLCULOS AVANZADOS</h2>
+        <button onclick="openExcel()" class="execute-btn">EJECUTAR CÁLCULO ELITE</button>
+        
+        <div class="instructions" id="instructions">
+            <p>Al hacer clic en el botón, el sistema intentará abrir el archivo directamente en Microsoft Excel.</p>
+        </div>
+    </div>
+
+    <script>
+        // Función para mostrar la fecha actual
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('es-ES', options);
+        }
+
+        // Función para abrir el archivo Excel directamente
+        function openExcel() {
+            try {
+                // Intenta abrir con el protocolo ms-excel (solo funciona con Excel instalado)
+                window.location.href = "ms-excel:ofe|u|" + window.location.protocol + "//" + window.location.host + "/CalculoElite.xlsx";
+                
+                // Si falla, intenta con la descarga directa
+                setTimeout(function() {
+                    var link = document.createElement('a');
+                    link.href = "CalculoElite.xlsx";
+                    link.download = "CalculoElite.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 500);
+                
+            } catch (e) {
+                alert("No se pudo abrir Excel directamente. El archivo se descargará.");
+                var link = document.createElement('a');
+                link.href = "CalculoElite.xlsx";
+                link.download = "CalculoElite.xlsx";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Detectar si es Edge/IE que soportan ms-excel
+        function isEdgeOrIE() {
+            return /trident|msie|edge/i.test(navigator.userAgent);
+        }
+
+        // Actualizar la fecha al cargar la página
+        window.onload = function() {
+            updateDate();
+            
+            // Ajustar instrucciones según el navegador
+            if (!isEdgeOrIE()) {
+                document.getElementById('instructions').innerHTML = 
+                    '<p>El sistema intentará abrir el archivo en Excel. Si no se abre automáticamente:</p>' +
+                    '<ol>' +
+                    '<li>Descarga el archivo haciendo clic derecho en <a href="CalculoElite.xlsx" download>este enlace</a> y selecciona "Guardar como..."</li>' +
+                    '<li>Abre el archivo descargado manualmente</li>' +
+                    '</ol>';
+            }
+        };
+    </script>
+</body>
+</html>
