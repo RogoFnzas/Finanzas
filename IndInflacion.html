@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Índice de Inflación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #000000; /* Fondo negro */
+            color: #ff6200; /* Letras naranjas */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        h1 {
+            font-size: 32px;
+            margin: 0;
+        }
+        .date {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        a {
+            color: #ff6200; /* Enlace naranja */
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: 2px solid #ff6200;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        a:hover {
+            background-color: #ff6200;
+            color: #000000; /* Letras negras al pasar el ratón */
+        }
+        .back-button {
+            padding: 10px 20px;
+            background-color: #ff6200; /* Botón naranja */
+            color: #000000; /* Letras negras */
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #e65c00; /* Naranja más oscuro */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Índice de Inflación</h1>
+        <div class="date" id="currentDate"></div>
+    </div>
+    <div class="container">
+        <a href="https://www.inegi.org.mx/app/indicesdeprecios/CalculadoraInflacion.aspx" target="_blank">Acceder a la Calculadora de Inflación de INEGI</a>
+        <button class="back-button" onclick="window.location.href='index.html'">Regresar a Inicio</button>
+    </div>
+
+    <script>
+        // Mostrar la fecha actual en formato "día mes año"
+        const months = [
+            "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ];
+        const today = new Date();
+        const day = today.getDate();
+        const month = months[today.getMonth()];
+        const year = today.getFullYear();
+        document.getElementById("currentDate").textContent = `${day} ${month} ${year}`;
+    </script>
+</body>
+</html>
